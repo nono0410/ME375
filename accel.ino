@@ -1,5 +1,4 @@
 #include <Wire.h>
-#include <stdio.h>
 
 long accelX, accelY, accelZ;
 float gForceX, gForceY, gForceZ;
@@ -14,6 +13,7 @@ float angelX = 0, angelY = 0, angelZ = 0;
 
 long timePast = 0;
 long timePresent = 0;
+float Time = 10; // ms
 
 void setup() {
   Serial.begin(9600);
@@ -28,7 +28,7 @@ void loop() {
   readAndProcessAccelData();
   readAndProcessGyroData();
   printData();
-  delay(100);
+  delay(Time);
 }
 
 void setUpMPU() {
@@ -156,8 +156,6 @@ void printData() {
   Serial.print("\t");
   Serial.println(Velocity);
 
-  Velocity = vel(gForceZ,Velocity);
-
-  delay(10);
+  Velocity = vel(gForceZ,Velocity,Time);
 
 }

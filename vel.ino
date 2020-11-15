@@ -1,6 +1,6 @@
-float vel(float gForceZ, float Velocity)
+float vel(float gForceZ, float Velocity, float Time)
 {
   // V = V0 + at
-  Velocity = Velocity + gForceZ * 0.01; // t = 10 ms
+  Velocity = Velocity + gForceZ * (Time/1000); // t = 10 ms
   return Velocity;
 }
