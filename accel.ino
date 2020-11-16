@@ -1,7 +1,7 @@
 #include <Wire.h>
 
 long accelX, accelY, accelZ;
-float gForceX, gForceY, gForceZ;
+float gForceX, gForceY, gForceZ, gZi;
 float Velocity = 0.0;
 
 long gyroXCalli = 0, gyroYCalli = 0, gyroZCalli = 0;
@@ -20,6 +20,7 @@ void setup() {
   Wire.begin();
   setUpMPU();
   callibrateGyroValues();
+  initialAccelData();
   timePresent = millis();
 }
 
@@ -63,6 +64,24 @@ void callibrateGyroValues() {
     gyroZCalli = gyroZCalli/5000;
 }
 
+void initialAccelData() {
+  Wire.beginTransmission(0b1101000); 
+  Wire.write(0x3B); 
+  Wire.endTransmission();
+  Wire.requestFrom(0b1101000,6); 
+  while(Wire.available() < 6);
+  accelX = Wire.read()<<8|Wire.read(); 
+  accelY = Wire.read()<<8|Wire.read(); 
+  accelZ = Wire.read()<<8|Wire.read(); 
+  iAccelData();
+}
+
+void iAccelData() {
+  gForceX = accelX/16384.0;
+  gForceY = accelY/16384.0;
+  gZi = accelZ/16384.0;
+}
+
 void readAndProcessAccelData() {
   Wire.beginTransmission(0b1101000); 
   Wire.write(0x3B); 
@@ -77,8 +96,8 @@ void readAndProcessAccelData() {
 
 void processAccelData() {
   gForceX = accelX/16384.0;
-  gForceY = accelY/16384.0; 
-  gForceZ = ((accelZ/16384.0)-1.12)*9.81;
+  gForceY = accelY/16384.0;
+  gForceZ = ((accelZ/16384.0)- gZi)*9.81;
 }
 
 void readAndProcessGyroData() {
