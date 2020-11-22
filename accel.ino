@@ -1,8 +1,9 @@
 #include <Wire.h>
 
 long accelX, accelY, accelZ;
-float gForceX, gForceY, gForceZ, gZi;
-float Velocity = 0.0;
+float gForceX, gForceY, gForceZ, gXi, gYi, gZi;
+float Vx, Vy, Vz = 0.0;
+float Dx, Dy, Dz = 0.0;
 
 long gyroXCalli = 0, gyroYCalli = 0, gyroZCalli = 0;
 long gyroXPresent = 0, gyroYPresent = 0, gyroZPresent = 0;
@@ -14,6 +15,7 @@ float angelX = 0, angelY = 0, angelZ = 0;
 long timePast = 0;
 long timePresent = 0;
 float Time = 10; // ms
+float RTime = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -26,6 +28,7 @@ void setup() {
 
 void loop() {
   //Serial.print(" Accel (g)");
+  RTime += Time;
   readAndProcessAccelData();
   readAndProcessGyroData();
   printData();
@@ -77,8 +80,8 @@ void initialAccelData() {
 }
 
 void iAccelData() {
-  gForceX = accelX/16384.0;
-  gForceY = accelY/16384.0;
+  gXi = accelX/16384.0;
+  gYi = accelY/16384.0;
   gZi = accelZ/16384.0;
 }
 
@@ -95,9 +98,9 @@ void readAndProcessAccelData() {
 }
 
 void processAccelData() {
-  gForceX = accelX/16384.0;
-  gForceY = accelY/16384.0;
-  gForceZ = ((accelZ/16384.0)- gZi)*9.81;
+  gForceX = ((accelX/16384.0)- gXi);
+  gForceY = ((accelY/16384.0)- gYi);
+  gForceZ = ((accelZ/16384.0)- gZi);
 }
 
 void readAndProcessGyroData() {
@@ -164,17 +167,29 @@ void printData() {
 
 */
 
-/*Serial.println("Acceleration (g)");
-  Serial.print(" X=");
-  Serial.print(gForceX);
-  Serial.print(" Y=");
-  Serial.print(gForceY);
-  Serial.print(" Z=");
-*/
-  Serial.print(gForceZ);
-  Serial.print("\t");
-  Serial.println(Velocity);
+  //Serial.println("Acceleration (g)");
+  //Serial.print(" X=");
+ // Serial.print(RTime);
+  //Serial.print("\t");
+  //Serial.print(gForceX);
+  //Serial.print("\t");
+  //Serial.print(" Y=");
+  //Serial.print(gForceY);
+  //Serial.print("\t");
+  //Serial.print(" Z=");
 
-  Velocity = vel(gForceZ,Velocity,Time);
+Serial.print(Vy);
+  Serial.print("\t");
+  Serial.print(Dy);
+  Serial.print("\t");
+Serial.print(gForceY);
+  Serial.println("\t");
+  
+  //Serial.print(gForceZ);
+  //Serial.println("\t");
+  //Serial.println(Velocity);
+velX(gForceX,&Vx,&Dx,Time);
+velY(gForceY,&Vy,&Dy,Time);
+  velZ(gForceZ,&Vz,&Dz,Time);
 
 }
